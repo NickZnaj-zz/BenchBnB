@@ -9,6 +9,9 @@ class Bench < ActiveRecord::Base
   #   "southWest"=> {"lat"=>"37.74187", "lng"=>"-122.47791"}
   # }
   #... query logic goes here
+
+
+  # benches where bench.lat between 
   end
 
 end

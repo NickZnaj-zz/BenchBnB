@@ -54,10 +54,12 @@ var Map = React.createClass ({
     this.benchListener = BenchStore.addListener(this._onChange);
     this.idleListener = this.map.addListener('idle', function() {
       ApiUtil.fetchBenches();
-    });
+      this._placeMarkers();
+    }.bind(this));
   },
 
   render: function() {
+    debugger
     return (
       <div className="map" ref="map"></div>
     );

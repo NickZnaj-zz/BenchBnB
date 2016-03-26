@@ -26541,7 +26541,6 @@
 	        bench.description
 	      );
 	    }.bind(this));
-	
 	    return React.createElement(
 	      'ul',
 	      null,
@@ -26635,10 +26634,12 @@
 	    this.benchListener = BenchStore.addListener(this._onChange);
 	    this.idleListener = this.map.addListener('idle', function () {
 	      ApiUtil.fetchBenches();
-	    });
+	      this._placeMarkers();
+	    }.bind(this));
 	  },
 	
 	  render: function () {
+	    debugger;
 	    return React.createElement('div', { className: 'map', ref: 'map' });
 	  }
 	});
