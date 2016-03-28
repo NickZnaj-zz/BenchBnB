@@ -8,7 +8,7 @@ var Index = require('./index');
 //   map.state.benches.forEach( function (bench) {
 //     // debugger
 //     var marker = new google.maps.Marker({
-//       position: {lat: bench.lat, lng: bench.long},
+//       position: {lat: bench.lat, lng: bench.lng},
 //       map: map.map,
 //       title: 'Hello World!'
 //     });
@@ -27,22 +27,60 @@ var Map = React.createClass ({
   },
 
   _placeMarkers: function() {
-    this.state.benches.forEach( function (bench) {
-      var marker = new google.maps.Marker({
-        position: {lat: bench.lat, lng: bench.long},
-        map: this.map,
-        title: 'Hello World!'
-      });
-      marker.setMap(this.map);
-    }.bind(this));
+    // if (this.markers.length > 0){
+    //   this.markers.forEach( function (marker) {
+    //     marker.setMap(this.map);
+    //
+    //   });
+    //
+    // } else {
+    //   debugger
+      this.state.benches.forEach( function (bench) {
+        var marker = new google.maps.Marker({
+          position: {lat: bench.lat, lng: bench.lng},
+          map: this.map,
+          title: 'Hello World!'
+        });
+        marker.bench = bench;
+        this.markers.push(marker);
+        // marker.setMap(this.map);
+        bench.marked = true;
+      }.bind(this));
+    // }
   },
+
+  // _checkMarked: function(bench) {
+  //   return bench.marked;
+  // },
+
+  // _removeMarkers: function() {
+  //   if (!this.state.benches.every(this._checkMarked)) {
+  //     debugger
+  //     this._placeMarkers();
+  //   }
+  //   else if (this.markers.length > this.state.benches.length) {
+  //     debugger
+  //     this.markers = [];
+  //     this._placeMarkers();
+  //   }
+  // },
 
   _onChange: function() {
     // debugger
-    this.setState({benches: BenchStore.all()});
+    this.setState({ benches: BenchStore.all() });
     this._placeMarkers();
   },
 
+  _getBounds: function(map) {
+    var bounds = {};
+    var northEast = map.getBounds().getNorthEast();
+    var southWest = map.getBounds().getSouthWest();
+
+    bounds.northEast = { "lat": northEast.lat() , "lng": northEast.lng() };
+    bounds.southWest = { "lat": southWest.lat() , "lng": southWest.lng() };
+    // debugger
+    return bounds;
+  },
 
   componentDidMount: function() {
     var mapDOMNode = this.refs.map;
@@ -51,15 +89,28 @@ var Map = React.createClass ({
       zoom: 17
     };
     this.map = new google.maps.Map(mapDOMNode, mapOptions);
+    this.markers = [];
     this.benchListener = BenchStore.addListener(this._onChange);
-    this.idleListener = this.map.addListener('idle', function() {
-      ApiUtil.fetchBenches();
+
+    this.dragEndListener = this.map.addListener('dragend', function() {
+      var bounds = this._getBounds(this.map);
+      ApiUtil.fetchBenches(bounds);
       this._placeMarkers();
+      // this._removeMarkers();
+      // debugger
+    }.bind(this));
+
+    this.zoomListener = this.map.addListener('zoom_changed', function() {
+      var bounds = this._getBounds(this.map);
+      ApiUtil.fetchBenches(bounds);
+      this._placeMarkers();
+      // this._removeMarkers();
+      // debugger
     }.bind(this));
   },
 
   render: function() {
-    debugger
+    // debugger
     return (
       <div className="map" ref="map"></div>
     );

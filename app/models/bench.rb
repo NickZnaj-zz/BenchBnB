@@ -1,5 +1,5 @@
 class Bench < ActiveRecord::Base
-  validates :description, :lat, :long, presence: true
+  validates :description, :lat, :lng, presence: true
 
 
   def self.in_bounds(bounds)
@@ -9,9 +9,27 @@ class Bench < ActiveRecord::Base
   #   "southWest"=> {"lat"=>"37.74187", "lng"=>"-122.47791"}
   # }
   #... query logic goes here
+    Bench.where("lat > (?) AND
+                 lat < (?) AND
+                 lng > (?) AND
+                 lng < (?)",
+                 bounds[:southWest][:lat],
+                 bounds[:northEast][:lat],
+                 bounds[:southWest][:lng],
+                 bounds[:northEast][:lng]
+                )
 
-
-  # benches where bench.lat between 
   end
 
 end
+
+# "lat > (?) AND
+# lat < (?) AND
+# lng < (?) AND
+# lng > (?)"
+#
+#
+# ,bounds[:southWest][:lat],
+# bounds[:northEast][:lat],
+# bounds[:southWest][:lng],
+# bounds[:northEast][:lng]

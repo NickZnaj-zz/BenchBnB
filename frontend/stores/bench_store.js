@@ -9,6 +9,10 @@ var resetBenches = function (benches) {
   _benches = benches;
 };
 
+var resetBench = function(bench) {
+  _benches[bench.id] = bench;
+};
+
 
 BenchStore.all = function () {
   return _benches.slice(0);
@@ -21,6 +25,10 @@ switch(payload.actionType) {
     resetBenches(payload.benches);
       BenchStore.__emitChange();
       break;
+  case BenchConstants.BENCH_RECEIVED:
+    resetBench(payload.bench);
+    BenchStore.__emitChange();
+    break;
   }
 };
 
